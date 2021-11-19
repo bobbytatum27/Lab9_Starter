@@ -5,6 +5,154 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "5462298e73554fab8ed0d84a395a21b4"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      console.log('In global error handler...');
+      console.trace();
+      TrackJS.track(message + ' ; ' + error);
+    };
+
+
+    class NoInputError extends Error {
+      constructor(msg) {
+        super(msg);
+        this.name = 'NoInputError';
+      }
+    }
+
+    const timers = [];
+    let timers_active = 0;
+
+    const groups = []
+    let groups_active = 0;
+
+    function consoleLog() {
+      console.log('You pressed the console.log button! Congratulations! You did it! woooooooo!');
+    }
+
+    function consoleError() {
+      console.error("You've encountered an error! You're code is busted and you're programming career is over. Oh no :O");
+    }
+
+    function consoleTable() {
+      let arr = [
+        {
+          name: 'Bobby',
+          occupation: 'American Ninja Warrior',
+          nickname: 'Skrob',
+        },
+        {
+          name: 'Jason',
+          occupation: 'Jester',
+          age: 20
+        },
+        {
+          name: 'John Jones',
+          occupation: 'Pacifist',
+          age: 34,
+          nickname: 'Bones'
+        }
+      ]
+      console.table(arr);
+    }
+
+    function consoleDir() {
+      let obj = {
+        'id': 109302580982,
+        'class': {
+          type: 'jester',
+          level: 50,
+          items: [
+            {
+              type: 'sword',
+              durability: 'low',
+              dps: '5'
+            },
+            {
+              type: 'biceps',
+              durability: 'high',
+              dps: 100000,
+            }
+          ]
+        },
+        'skreeble': {
+          'skrobble': 'dobble',
+          'wobble': 'jobble',
+          'jam': {
+            'ham': 'green eggs',
+          }
+        }
+      }
+      console.dir(obj);
+    }
+
+    function consoleDirXml() {
+      const elem = document.getElementById('error-btns');
+      console.dirxml(elem);
+    }
+
+    function consoleCount() {
+      console.count("You've called console.count() this many times");
+    }
+
+    function consoleWarn() {
+      console.warn('Warning!');
+    }
+
+    function consoleAssert() {
+      console.assert(false, 'Assertion is false :(');
+    }
+
+    function consoleClear() {
+      console.clear();
+    }
+
+    function consoleTrace() {
+      function foo() {
+        function bar() {
+          console.trace();
+        }
+        bar();
+      }
+      foo();
+    }
+
+    function consoleTime() {
+      timers_active++;
+      console.time('Timer ' + timers_active);
+      timers.push('Timer ' + timers_active);
+      console.time();
+    }
+
+    function consoleTimeEnd() {
+      if (timers_active !== 0) {
+        timer = timers.pop();
+        console.timeEnd(timer);
+        timers_active--;
+      }
+    }
+
+    function consoleGroup() {
+      groups_active++;
+      console.group('Group ' + groups_active);
+      groups.push('Group ' + groups_active);
+    }
+
+    function consoleGroupEnd() {
+      if (groups_active !== 0) {
+        group = groups.pop();
+        console.groupEnd(group);
+        groups_active--;
+      }
+    }
+  </script>
   <title>Lab 9</title>
 
   <style>
@@ -69,33 +217,53 @@
     </form>
 
     <section id="error-btns">
-      <button>Console Log</button>
-      <button>Console Error</button>
-      <button>Console Count</button>
-      <button>Console Warn</button>
-      <button>Console Assert</button>
-      <button>Console Clear</button>
-      <button>Console Dir</button>
-      <button>Console dirxml</button>
-      <button>Console Group Start</button>
-      <button>Console Group End</button>
-      <button>Console Table</button>
-      <button>Start Timer</button>
-      <button>End Timer</button>
-      <button>Console Trace</button>
+      <button onclick="consoleLog()">Console Log</button>
+      <button onclick="consoleError()">Console Error</button>
+      <button onclick="consoleCount()">Console Count</button>
+      <button onclick="consoleWarn()">Console Warn</button>
+      <button onclick="consoleAssert()">Console Assert</button>
+      <button onclick="consoleClear()">Console Clear</button>
+      <button onclick="consoleDir()">Console Dir</button>
+      <button onclick="consoleDirXml()">Console dirxml</button>
+      <button onclick="consoleGroup()">Console Group Start</button>
+      <button onclick="consoleGroupEnd()">Console Group End</button>
+      <button onclick="consoleTable()">Console Table</button>
+      <button onclick="consoleTime()">Start Timer</button>
+      <button onclick="consoleTimeEnd()">End Timer</button>
+      <button onclick="consoleTrace()">Console Trace</button>
       <button>Trigger a Global Error</button>
     </section>
   </main>
 
   <script>
+    let success = true;
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
-      let output = document.querySelector('output');
-      let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      try {
+        let output = document.querySelector('output');
+        let firstNum = document.querySelector('#first-num').value;
+        let secondNum = document.querySelector('#second-num').value;
+        let operator = document.querySelector('#operator').value;
+        if (firstNum === '' || secondNum === '') {
+          throw new NoInputError('No input provided for an operand in the calculator.');
+        }
+
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      } catch (err) {
+        success = false;
+        if (err instanceof ReferenceError) {
+          console.error('Malformed Input in the Error Calculator. Please do not use letters.');
+        } else if (err instanceof NoInputError) { 
+          console.error('Missing input for calculator!');
+          console.error(err);
+        }else {
+          throw err;
+        }
+      } finally {
+        const DID_SUCCEED = success ? 'with no errors.' : 'with errors.';
+        console.log('Done calculating ' + DID_SUCCEED);
+      }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
