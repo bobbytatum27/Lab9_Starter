@@ -253,16 +253,16 @@
       } catch (err) {
         success = false;
         if (err instanceof ReferenceError) {
-          console.error('Malformed Input in the Error Calculator. Please do not use letters.');
+          console.error('Reference error caught. Malformed Input in the Error Calculator. Please do not use letters.');
         } else if (err instanceof NoInputError) { 
-          console.error('Missing input for calculator!');
+          console.error('Customer Error Type caught (NoInputError). Missing input for calculator! Please provide input.');
           console.error(err);
         }else {
           throw err;
         }
       } finally {
         const DID_SUCCEED = success ? 'with no errors.' : 'with errors.';
-        console.log('Done calculating ' + DID_SUCCEED);
+        console.log('Calculator is done ' + DID_SUCCEED);
       }
     });
 
