@@ -14,7 +14,7 @@
   </script>
   <script>
     window.onerror = function(message, source, lineno, colno, error) {
-      console.log('In global error handler...');
+      console.log('In global error handler. Outputting a console.trace() call and logging to TrackJS.');
       console.trace();
       TrackJS.track(message + ' ; ' + error);
     };
@@ -231,7 +231,7 @@
       <button onclick="consoleTime()">Start Timer</button>
       <button onclick="consoleTimeEnd()">End Timer</button>
       <button onclick="consoleTrace()">Console Trace</button>
-      <button>Trigger a Global Error</button>
+      <button onclick="triggeraglobalerror()">Trigger a Global Error</button>
     </section>
   </main>
 
